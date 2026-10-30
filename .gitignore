@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.db
+
+# Node / Angular
+node_modules/
+.angular/
+dist/
+
+# Editor / OS / tooling
+.vscode/
+.idea/
+.claude/
+.DS_Store
+Thumbs.db
+*.log
+
+# Secrets
+.env

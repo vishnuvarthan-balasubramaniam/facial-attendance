@@ -1,0 +1,23 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+h1 { font-family: var(--font-serif); font-weight: 400; font-size: 30px; margin: 0; }
+h2 { font-size: 18px; font-weight: 600; margin: 0 0 12px; }
+h3 { font-size: 15px; font-weight: 600; margin: 0; }
+.lede { color: var(--muted); max-width: 60rem; line-height: 1.5; margin: 8px 0 0; }
+.lede b { color: var(--fg); }
+.banner {
+  margin: 8px 0 0; padding: 10px 14px; border-radius: var(--radius);
+  border: 1px solid var(--critical); color: var(--fg);
+}
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr)); gap: 12px; }
+.wide { grid-column: 1 / -1; }
+.spaced { margin-top: 12px; }
+.foot { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.foot p { margin: 0 0 6px; }

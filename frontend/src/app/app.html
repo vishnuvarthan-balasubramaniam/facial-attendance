@@ -1,0 +1,150 @@
+<main class="page">
+  <header>
+    <div class="title-row">
+      <h1>Office attendance &amp; WFO compliance</h1>
+      @if (months.value().length) {
+        <select
+          class="month-select"
+          aria-label="Month"
+          [value]="selectedEnd()"
+          (change)="selectedEnd.set($any($event.target).value)"
+        >
+          @for (o of months.value(); track o.month; let i = $index) {
+            <option [value]="i === 0 ? '' : o.end">
+              {{ monthLabel(o) }}{{ i === 0 ? ' (latest)' : '' }}
+            </option>
+          }
+        </select>
+      }
+    </div>
+    @if (failed()) {
+      <p class="banner">
+        Can't reach the API. Start the backend with <code>uvicorn app.main:app --reload</code> in
+        the backend folder.
+      </p>
+    } @else {
+      <p class="lede">
+        <b>{{ summary().compliant }}</b> of <b>{{ summary().total }}</b> employees met the
+        <b>{{ requiredDays() }} office days</b> required for {{ monthName() }} ({{
+          currentRange()
+        }}), checked in by face recognition. Any days of the month count.
+        <b>{{ summary().lowestDept }}</b> is furthest behind, with
+        <b>{{ summary().lowestPct }}</b> of its people meeting the requirement.
+      </p>
+    }
+  </header>
+
+  <section class="tiles" aria-label="Headline figures, this month">
+    @for (t of tiles(); track t.label) {
+      <app-kpi-tile
+        [label]="t.label"
+        [value]="t.value"
+        [delta]="t.delta"
+        [unit]="t.unit"
+        [better]="t.better"
+      />
+    }
+  </section>
+
+  <section>
+    <h2>When and where people come in</h2>
+    <div class="grid">
+      <div class="card wide">
+        <h3>People in office each working day</h3>
+        <p class="note">{{ fullRange() }}. Holidays are left out. Hover a bar for leave.</p>
+        <app-bar-chart
+          [data]="daily.value()"
+          [x]="dailyChart.x"
+          [y]="dailyChart.y"
+          [xFormat]="dailyChart.xFormat"
+          [tooltip]="dailyChart.tooltip"
+          [labelWidth]="60"
+        />
+      </div>
+      <div class="card">
+        <h3>Occupancy by weekday</h3>
+        <p class="note">
+          Share of all employees in office, this month. Use it to plan desks, cafeteria and team
+          days.
+        </p>
+        <app-bar-chart
+          [data]="weekday.value()"
+          [x]="weekdayChart.x"
+          [y]="weekdayChart.y"
+          [yFormat]="weekdayChart.yFormat"
+          [yMax]="1"
+          [valueLabels]="true"
+          [tooltip]="weekdayChart.tooltip"
+          [labelWidth]="30"
+        />
+      </div>
+      <div class="card">
+        <h3>Requirement met by department</h3>
+        <p class="note">
+          Share of each department's employees who have reached the {{ requiredDays() }} office days
+          this month.
+        </p>
+        <app-dept-chart [data]="depts.value()" />
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Employee compliance</h2>
+    <div class="card">
+      <p class="note">
+        {{ monthName() }}. Sort by any column; start with the lowest progress to see who needs a
+        conversation.
+      </p>
+      <app-employee-table
+        [rows]="employees.value()"
+        [departments]="meta.value()?.departments ?? []"
+        [policy]="1"
+      />
+    </div>
+  </section>
+
+  <section>
+    <h2>Face recognition health</h2>
+    <div class="tiles">
+      @for (t of recogTiles(); track t.label) {
+        <app-kpi-tile [label]="t.label" [value]="t.value" [note]="t.note" />
+      }
+    </div>
+    <div class="card spaced">
+      <h3>Unknown faces per day</h3>
+      <p class="note">
+        Red dots mark days a spoof attempt was blocked. A rise in unknown faces usually means new
+        joiners still need enrolling.
+      </p>
+      <app-bar-chart
+        [data]="recognition.value()"
+        [x]="recogChart.x"
+        [y]="recogChart.y"
+        [yMax]="recogMax()"
+        [xFormat]="recogChart.xFormat"
+        [color]="recogChart.color"
+        [marker]="recogChart.marker"
+        [tooltip]="recogChart.tooltip"
+        [labelWidth]="60"
+      />
+    </div>
+  </section>
+
+  <footer class="foot">
+    <h2>How these are worked out</h2>
+    <p>
+      Requirement: HR sets the number of office days for each month ({{ requiredDays() }} for
+      {{ monthName() }}; it changes with holidays). Employees can come in on any days of the month.
+      The requirement is lowered for anyone whose leave leaves fewer eligible days than that.
+      Progress is days recognized in office ÷ required days.
+    </p>
+    <p>
+      Status: compliant once the required days are reached; at risk if short but enough working days
+      remain this month to still get there; below policy if the requirement can no longer be
+      reached. Office attendance rate is days in office ÷ eligible working days (holidays and
+      approved leave left out).
+    </p>
+    <!-- <p>Late check-in: first recognition after {{ meta.value()?.policy?.late_after ?? '10:00' }}. Hours in office: first to last recognition of the day.</p> -->
+  </footer>
+</main>

@@ -1,0 +1,132 @@
+/* Design tokens — light and dark */
+:root {
+  --bg: #f7f6f3;
+  --panel: #ffffff;
+  --fg: #1f1e1c;
+  --muted: #6b6862;
+  --line: #e4e1da;
+  --grid: #eceae4;
+  --axis: #c9c5bc;
+  --ref: #8a867d;
+  --series-1: #3b6fd8;
+  --series-2: #8a6cd1;
+  --critical: #d4483b;
+  --ok: #2e7d4f;
+  --warn: #b26b00;
+  --bad: #c23b2e;
+  --radius: 8px;
+  --shadow: 0 6px 20px rgb(0 0 0 / 0.12);
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1b1a18;
+    --panel: #252421;
+    --fg: #ecebe7;
+    --muted: #a19d95;
+    --line: #3a3834;
+    --grid: #33312d;
+    --axis: #4d4a45;
+    --ref: #9b978e;
+    --series-1: #6f9bf0;
+    --series-2: #a991e6;
+    --critical: #f0705f;
+    --ok: #6cc28f;
+    --warn: #e0a447;
+    --bad: #f0705f;
+    --shadow: 0 6px 20px rgb(0 0 0 / 0.5);
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Cards and tiles */
+.card {
+  display: block;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  min-width: 0;
+}
+.tile .label { font-size: 13px; color: var(--muted); }
+.tile .value { font-family: var(--font-serif); font-size: 30px; margin: 6px 0; }
+.tile .sub { font-size: 13px; color: var(--muted); }
+.good { color: var(--ok); }
+.bad { color: var(--bad); }
+.note { color: var(--muted); font-size: 13px; margin: 4px 0 14px; }
+
+/* D3 charts (shared by every chart component) */
+.chart { display: block; position: relative; min-height: 220px; }
+.chart svg text { font-family: var(--font); font-size: 12px; fill: var(--muted); }
+.chart svg text.value { fill: var(--fg); }
+.chart svg .grid { stroke: var(--grid); }
+.chart svg .axis { stroke: var(--axis); }
+.chart svg .ref { stroke: var(--ref); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.chart svg rect.dim { opacity: 0.45; }
+.chart-tip {
+  position: absolute; z-index: 2; pointer-events: none; white-space: nowrap;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 6px 10px; font-size: 12px;
+}
+.chart-tip-title { color: var(--muted); margin-bottom: 2px; }
+.chart-tip-row { display: flex; justify-content: space-between; gap: 16px; }
+
+/* Employee table */
+.controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.controls input, .controls select, .btn {
+  font: inherit; font-size: 13px; padding: 6px 10px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--bg); color: var(--fg);
+}
+.controls input { flex: 1 1 12rem; }
+.btn { cursor: pointer; }
+.btn:hover { border-color: var(--axis); }
+.table-box { max-height: 30rem; overflow: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  position: sticky; top: 0; z-index: 1; background: var(--panel);
+  text-align: left; border-bottom: 1px solid var(--line); padding: 0; white-space: nowrap;
+}
+th button {
+  all: unset; cursor: pointer; display: block; width: 100%; box-sizing: border-box;
+  padding: 6px 10px; color: var(--muted); font-weight: 600;
+}
+th.num button { text-align: right; }
+th[aria-sort='ascending'] button::after { content: ' ↑'; }
+th[aria-sort='descending'] button::after { content: ' ↓'; }
+td { padding: 6px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td.num { text-align: right; }
+td.empty { text-align: center; color: var(--muted); padding: 24px; }
+.cell-bar { display: flex; align-items: center; gap: 8px; }
+.track { position: relative; width: 64px; height: 6px; border-radius: 3px; background: var(--grid); }
+.track span { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: var(--series-1); }
+.track span.below { background: var(--critical); }
+.track em { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--ref); }
+.pill { font-weight: 600; }
+.pill.ok { color: var(--ok); }
+.pill.warn { color: var(--warn); }
+.pill.bad { color: var(--bad); }
+
+@media (max-width: 640px) {
+  .hide-narrow { display: none; }
+}
+
+/* Month picker, same look as the table dropdowns */
+.title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.month-select {
+  font: inherit; font-size: 13px; padding: 6px 10px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--bg); color: var(--fg);
+}

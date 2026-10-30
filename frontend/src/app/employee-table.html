@@ -1,0 +1,63 @@
+<div class="controls">
+  <input type="search" placeholder="Search name or ID" aria-label="Search employees"
+    [value]="query()" (input)="query.set($any($event.target).value)">
+  <select aria-label="Department" [value]="dept()" (change)="dept.set($any($event.target).value)">
+    <option value="">All departments</option>
+    @for (d of departments(); track d) {
+      <option [value]="d">{{ d }}</option>
+    }
+  </select>
+  <select aria-label="Status" [value]="status()" (change)="status.set($any($event.target).value)">
+    <option value="">All statuses</option>
+    @for (s of statuses; track s) {
+      <option [value]="s">{{ s }}</option>
+    }
+  </select>
+  <button type="button" class="btn" (click)="exportCsv()">Export CSV</button>
+</div>
+<p class="note">Showing {{ visible().length }} of {{ rows().length }} employees</p>
+
+<div class="table-box">
+  <table>
+    <thead>
+      <tr>
+        @for (c of columns; track c.key) {
+          <th [attr.aria-sort]="ariaSort(c.key)" [class.num]="c.num" [class.hide-narrow]="c.hideNarrow">
+            <button type="button" (click)="sortBy(c.key)">{{ c.label }}</button>
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of visible(); track r.emp_id) {
+        <tr>
+          <td>{{ r.emp_id }}</td>
+          <td>{{ r.name }}</td>
+          <td>{{ r.dept }}</td>
+          <td class="hide-narrow">{{ r.location }}</td>
+          <td class="num">{{ r.office_days }}</td>
+          <td class="num">{{ r.required_days }}</td>
+          <td class="num hide-narrow">{{ r.eligible_days }}</td>
+          <td>
+            <div class="cell-bar">
+              <div class="track">
+                <span [style.width.%]="r.wfo_pct * 100" [class.below]="r.wfo_pct < policy()"></span>
+                <em [style.left.%]="policy() * 100"></em>
+              </div>
+              {{ r.wfo_pct | percent }}
+            </div>
+          </td>
+          <!--<td class="num" [class.good]="r.change_pts > 0" [class.bad]="r.change_pts < 0">
+            {{ r.change_pts > 0 ? '+' : r.change_pts < 0 ? '−' : '' }}{{ (r.change_pts < 0 ? -r.change_pts : r.change_pts) | number: '1.1-1' }}
+          </td>-->
+          <td class="num hide-narrow">{{ r.days_left }}</td>
+          <!-- <td>{{ r.avg_check_in ?? '—' }}</td> -->
+          <!-- <td class="num hide-narrow">{{ r.avg_hours == null ? '—' : (r.avg_hours | number: '1.1-1') }}</td> -->
+          <td><span class="pill" [class]="pillClass(r.status)">{{ r.status }}</span></td>
+        </tr>
+      } @empty {
+        <tr><td [attr.colspan]="columns.length" class="empty">No employees match these filters.</td></tr>
+      }
+    </tbody>
+  </table>
+</div>
